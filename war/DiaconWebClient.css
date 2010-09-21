@@ -1,0 +1,74 @@
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #4F9BDE;
+  margin: 40px 0px 40px;
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border-collapse: collapse;
+}
+
+
+.gwt-Label, .gwt-TreeItem {
+	color: #4F9BDE;
+	font-weight: bold;
+}
+
+.error-Message {
+	font-weight: bold;
+	color: #DE4F54;
+    padding: 10px;
+}
+
+.diaryContent {
+	padding: 0px;
+	width: 630px;
+	height: 400px;
+	background-color: white;
+	border: solid #69AAE2 1px;
+}
+
+.diary-ListRow {
+  font-weight: bold;
+  color: #777777;
+  border-bottom: dotted 1px #69AAE2;
+}
+
+.diary-ActionCell {
+	text-align: left;
+	padding-right: 10px;
+	width: 20%;
+}
+
+.diary-DataCell {
+	text-align: left;
+	padding-right: 10px;
+	width: 65%;
+}
+
+.diary-CheckCell {
+	text-align: left;
+	padding-right: 10px;
+	width : 5%;
+}
+
+.diary-HourCell {
+	text-align: left;
+	padding-right: 10px;
+	color: #4F9BDE;
+	width: 10%
+}
+
+
+.gwt-DecoratorPanel .middleCenter {
+   height: 100%;
+   width: 100%;
+ }
+
+

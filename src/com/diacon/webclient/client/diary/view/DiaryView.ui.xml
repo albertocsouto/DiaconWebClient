@@ -1,0 +1,129 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:dp="urn:import:com.google.gwt.user.datepicker.client" xmlns:g="urn:import:com.google.gwt.user.client.ui"
+	xmlns:tp="urn:import:com.gwtincubator.widgets.client.timepicker">
+	<ui:style>
+		.decorator {
+			border: solid #69AAE2 1px;
+			background-color: #D0E4F6;
+		}		
+		.title {
+			font-size: 1.2em;
+			font-weight: bold;
+			background-color: #69AAE2;
+			color: white;
+			text-align: center;
+		}		
+		.delete {
+			margin-left:5px;
+			margin-bottom:5px;
+			background:#D0E4F6;
+			color: #4F9BDE;
+			border: solid #69AAE2 1px;
+		}
+		.foodChooser {
+			text-align: center;
+			padding: 4px;
+			width: 150px;
+			background:#D0E4F6;
+			color: #4F9BDE;
+			border: solid #4F9BDE 1px;	
+			margin-right: 6px;
+		}
+		.addButton {
+			background:#69AAE2;
+			color: white;
+		}		
+		.diaryTable{
+			width: 100%;
+			height: 400px;
+			vertical-align:top;	
+		}
+				
+	</ui:style>
+
+	<g:DecoratorPanel addStyleNames="{style.decorator}" width="800px" height="450px">
+	<g:HTMLPanel>
+		<table>
+			<tr>
+				<td style="vertical-align:top;padding-right:7px;">
+					<dp:DatePicker ui:field="calendar" />
+				</td>
+				<td>
+					<table class="diaryContent">
+						<tr>
+							<td style="vertical-align:top;">
+								<g:Label addStyleNames="{style.title}">Diary Entries</g:Label>
+							</td>
+						</tr>
+						<tr>
+							<td style="vertical-align:top;text-align:center">
+								<g:HTML addStyleNames="{style.diaryTable}" ui:field="diaryTable"></g:HTML>
+							</td>
+						</tr>
+
+						<tr>
+							<td height="40px">
+								<g:Button ui:field="deleteButton" addStyleNames="{style.delete}">Delete
+									Entries</g:Button>
+							</td>
+						</tr>
+						<tr>
+							<table class="diaryMenu">
+								<tr width="100%" height="50px">
+									<td>
+										<g:Label width="30px">Hour</g:Label>
+									</td>
+									<td>
+										<tp:TimePicker width="50px" ui:field="timePicker" />
+									</td>
+									<td>
+										<g:ListBox width="110px" ui:field="actionList" />
+									</td>
+									<td>
+										<g:ListBox ui:field="foodList" />
+									</td>
+									<td>
+										<g:Label ui:field="foodChooser" addStyleNames="{style.foodChooser}">Choose
+											Food</g:Label>
+									</td>
+									<td>
+										<g:Tree ui:field="foodTree"></g:Tree>
+									</td>
+									<td>
+										<g:TextBox width="40px" ui:field="foodQuantityText" />
+									</td>
+									<td>
+										<g:Label ui:field="foodLabel">gr</g:Label>
+									</td>
+
+									<td style="text-align:right">
+										<g:Label width="120px" ui:field="insulineLabel">Insuline Units</g:Label>
+									</td>
+									<td>
+										<g:ListBox width="50px" ui:field="insulineList" />
+									</td>
+									<td>
+										<g:ListBox ui:field="timeList" />
+									</td>
+									<td>
+										<g:TextBox width="40px" ui:field="measureText" />
+									</td>
+									<td>
+										<g:Label ui:field="measureLabel">mg/dl</g:Label>
+									</td>
+
+									<td width="100%" style="text-align:right;">
+										<g:Button addStyleNames="{style.addButton}" ui:field="addButton">Add</g:Button>
+									</td>
+								</tr>
+							</table>
+						</tr>
+					</table>
+				</td>
+
+			</tr>
+		</table>
+	</g:HTMLPanel>
+	</g:DecoratorPanel>
+</ui:UiBinder> 
