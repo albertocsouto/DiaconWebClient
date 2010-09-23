@@ -74,55 +74,11 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 	private List<ColumnDefinition<T>> columnDefinitions;
 	private List<T> rowData;
 
-	public DiaryViewImpl() {
-		
-		initWidget(uiBinder.createAndBindUi(this));
-		
-		// FIXME: Some tricky initializations here. Should be a better way...
-		timePicker.setTime(0, 0);
-		timePicker.setReadOnly(true);
-		
-		for (EntryType e: EntryType.values()) {
-			actionList.addItem(e.getValue(), e.toString());
-		}
-		
-		for (FoodTime f: FoodTime.values()) {
-			foodList.addItem(f.getValue(), f.toString());
-		}
-		
-		for (DayTime d: DayTime.values()) {
-			timeList.addItem(d.getValue(), d.toString());
-		}
-		
-		for (int i=1; i < 10; i++) {
-			insulineList.addItem(Integer.valueOf(i).toString());
-		}
-				
-		populateFoodTree();
-	
-		// FIXME: I'm not able to use UiBinder to do this
-		calendar.addValueChangeHandler(new ValueChangeHandler<Date>() {
-			public void onValueChange(ValueChangeEvent<Date> event) {
-				onCalendarValueChange(event);				
-			}			
-		});
-		
-		foodTree.addSelectionHandler(new SelectionHandler<TreeItem>() {
-			public void onSelection(SelectionEvent<TreeItem> event) {
-				onSelectedFood(event);		
-			}
-			
-		});
-		
-		foodDialogBox = new PopupPanel();
-		foodDialogBox.add(foodTree);
-		foodDialogBox.setModal(true);
-		
-		deleteButton.setVisible(false);
-		
+	public DiaryViewImpl() {		
+		initWidget(uiBinder.createAndBindUi(this));		
+		init();		
 	}
-	
-	
+		
 	public void changeAction() {
 		EntryType action = EntryType.valueOf(actionList.getValue(actionList.getSelectedIndex()));		
 	
@@ -307,6 +263,49 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 		foodTree.addItem(bread);
 	}
 	
+	private void init() {
+		// FIXME: Some tricky initializations here. Should be a better way...
+		timePicker.setTime(0, 0);
+		timePicker.setReadOnly(true);
+		
+		for (EntryType e: EntryType.values()) {
+			actionList.addItem(e.getValue(), e.toString());
+		}
+		
+		for (FoodTime f: FoodTime.values()) {
+			foodList.addItem(f.getValue(), f.toString());
+		}
+		
+		for (DayTime d: DayTime.values()) {
+			timeList.addItem(d.getValue(), d.toString());
+		}
+		
+		for (int i=1; i < 10; i++) {
+			insulineList.addItem(Integer.valueOf(i).toString());
+		}
+				
+		populateFoodTree();
+	
+		// FIXME: I'm not able to use UiBinder to do this
+		calendar.addValueChangeHandler(new ValueChangeHandler<Date>() {
+			public void onValueChange(ValueChangeEvent<Date> event) {
+				onCalendarValueChange(event);				
+			}			
+		});
+		
+		foodTree.addSelectionHandler(new SelectionHandler<TreeItem>() {
+			public void onSelection(SelectionEvent<TreeItem> event) {
+				onSelectedFood(event);		
+			}
+			
+		});
+		
+		foodDialogBox = new PopupPanel();
+		foodDialogBox.add(foodTree);
+		
+		deleteButton.setVisible(false);		
+	}
+	
 	
 	// Handlers
 	
@@ -352,6 +351,11 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 	
 	@UiHandler("foodButton")
 	void onMouseClickFood(ClickEvent event) {
+		
+		if (foodDialogBox.isShowing()) {
+			foodDialogBox.hide();
+			return;
+		}
 		
 		foodDialogBox.setPopupPosition(foodButton.getAbsoluteLeft(), 
 				foodButton.getAbsoluteTop() + foodButton.getOffsetHeight());
