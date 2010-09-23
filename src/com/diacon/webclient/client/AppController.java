@@ -102,14 +102,6 @@ public class AppController implements Presenter, ValueChangeHandler<String> {
 	    		}
 	    	}
 	    	
-	      /*
-	      else if (token.equals("add")) {
-	        presenter = new EditContactPresenter(rpcService, eventBus, new EditContactView());
-	      }
-	      else if (token.equals("edit")) {
-	        presenter = new EditContactPresenter(rpcService, eventBus, new EditContactView());
-	      }
-	      */
 	    	if (presenter != null) {
 	    		presenter.go(container);
 	    	}

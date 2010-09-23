@@ -6,8 +6,6 @@ import com.diacon.webclient.shared.diary.jso.DiaryDataFoodJSO;
 import com.diacon.webclient.shared.diary.jso.DiaryDataMeasureJSO;
 import com.diacon.webclient.shared.diary.jso.DiaryDataMedicationJSO;
 import com.diacon.webclient.shared.diary.jso.DiaryEntryJSO;
-import com.google.gwt.json.client.JSONObject;
-import com.google.gwt.json.client.JSONValue;
 
 @SuppressWarnings("serial")
 public class DiaryEntry implements Serializable {

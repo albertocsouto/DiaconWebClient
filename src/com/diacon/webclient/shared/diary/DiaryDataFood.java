@@ -1,6 +1,7 @@
 package com.diacon.webclient.shared.diary;
 
 import com.diacon.webclient.shared.diary.jso.DiaryDataFoodJSO;
+import com.google.gwt.i18n.client.NumberFormat;
 
 @SuppressWarnings("serial")
 public class DiaryDataFood extends DiaryData {
@@ -38,7 +39,9 @@ public class DiaryDataFood extends DiaryData {
 	}
 	
 	public String getFormattedData() {
-		return(this.foodTime.getValue() + " " + this.foodQuantity + " gr. of " + this.food);
+		return(this.foodTime.getValue() + " " + 
+				NumberFormat.getFormat("#0.##").format(this.foodQuantity) + 
+				" gr. of " + this.food);
 	}
 	
 	public String toJSON() {

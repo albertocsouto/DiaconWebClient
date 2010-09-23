@@ -7,6 +7,7 @@ import com.diacon.webclient.client.diary.common.ColumnDefinition;
 import com.diacon.webclient.shared.diary.DayTime;
 import com.diacon.webclient.shared.diary.EntryType;
 import com.diacon.webclient.shared.diary.FoodTime;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -14,9 +15,11 @@ public interface DiaryView<T> {
 
 	public interface Presenter<T> {
 		void onAddButtonClicked();
+		void onDeleteButtonClicked();
 		void onCalendarChanged(Date date);
 		void onActionChanged();
 		void onCheckClicked(T selectedItem);
+		void onTextChanged(HasText textField);
 	}
 
 	void setDate(String stringDate);
@@ -25,6 +28,7 @@ public interface DiaryView<T> {
 	void setRowData(List<T> rowData);
 	void changeAction();
 	void showDeleteButton(boolean show);
+	void enableAddButton(boolean enabled);
 	EntryType getAction();
 	DayTime getDayTime();
 	FoodTime getFoodTime();

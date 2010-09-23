@@ -17,12 +17,14 @@ import com.diacon.webclient.shared.diary.DiaryDataMeasure;
 import com.diacon.webclient.shared.diary.DiaryDataMedication;
 import com.diacon.webclient.shared.diary.DiaryEntry;
 import com.diacon.webclient.shared.diary.EntryType;
+import com.diacon.webclient.shared.diary.FieldVerifier;
 import com.diacon.webclient.shared.diary.jso.DiaryEntryJSO;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasWidgets;
 
 public class DiaryPresenter implements Presenter, 
@@ -54,7 +56,7 @@ public class DiaryPresenter implements Presenter,
 		container.add(view.asWidget());
 		fetchDiaryEntries(date);
 		onActionChanged();
-		view.showDeleteButton(false);
+		view.enableAddButton(false);
 	}
 
 	public void sortDiaryEntries() {
@@ -106,6 +108,31 @@ public class DiaryPresenter implements Presenter,
 			}			
 		});
 
+	}
+	
+	public void onDeleteButtonClicked() {
+		RequestBuilder request = new RequestBuilder(diaryService);
+		request.setAction("removeDiaryEntry");
+		String parameter = "[";
+		for (int i=0;i<selectionModel.size();i++) {			
+			if (i==0) {
+				parameter = parameter + selectionModel.getSelectedItems().get(i).getId();
+			} else {
+				parameter = parameter + "," + selectionModel.getSelectedItems().get(i).getId();
+			}			
+		}
+		parameter = parameter + "]";
+	    request.addParameterWithoutFormat("id", parameter);	
+		JSONRequest.get(request.getUrl(), new JSONRequestHandler(){
+			public void onRequestComplete(JavaScriptObject json) {
+					JSONObject response = new JSONObject(json);
+				if (response.get("result").isString().stringValue().equals("ok")) {
+					selectionModel.getSelectedItems().clear();
+					fetchDiaryEntries(date);					
+				}
+			}			
+		});
+		
 	}
 	
 	public void onCalendarChanged(Date date) {
@@ -164,6 +191,14 @@ public class DiaryPresenter implements Presenter,
 
 		sortDiaryEntries();
 		view.setRowData(diaryEntries);
+		view.showDeleteButton(selectionModel.size() > 0);
 	}
 
+	public void onTextChanged(HasText textField) {
+		view.enableAddButton(!FieldVerifier.isÉmpty(textField));	
+	}
+
+	public void setDiaryEntries (List<DiaryEntry> diaryEntries) {
+		this.diaryEntries = diaryEntries;
+	}
 }

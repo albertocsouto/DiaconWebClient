@@ -1,6 +1,7 @@
 package com.diacon.webclient.shared.diary;
 
 import com.diacon.webclient.shared.diary.jso.DiaryDataMeasureJSO;
+import com.google.gwt.i18n.client.NumberFormat;
 
 @SuppressWarnings("serial")
 public class DiaryDataMeasure extends DiaryData {
@@ -35,7 +36,8 @@ public class DiaryDataMeasure extends DiaryData {
 	}
 	
 	public String getFormattedData() {
-		return(this.dayTime.getValue() + ": " +  String.valueOf(this.measure) + " mg/dl");
+		return(this.dayTime.getValue() + ": " +  
+				NumberFormat.getFormat("#0.##").format(this.measure) + " mg/dl");
 	}
 
 	public String toJSON() {

@@ -24,7 +24,7 @@ public class DiaryColumnDefinitionsImpl extends
     	      public void render(DiaryEntry d, StringBuilder sb) {
     	        sb.append("<input type='checkbox'/>");
     	      }
-
+    	      
     	      public boolean isSelectable() {
     	        return true;
     	      }
@@ -34,7 +34,7 @@ public class DiaryColumnDefinitionsImpl extends
     	      public void render(DiaryEntry d, StringBuilder sb) {        
     	    	  sb.append("<div id='" + d.getId() + "'>" + d.getTime() + "</div>");
     	      }
-
+    	      
     	      public boolean isClickable() {
     	        return false;
     	      }
@@ -44,7 +44,7 @@ public class DiaryColumnDefinitionsImpl extends
         	      public void render(DiaryEntry d, StringBuilder sb) {        
         	    	  sb.append("<div id='" + d.getId() + "'>" + d.getType().getValue() + "</div>");
         	      }
-
+        	      
         	      public boolean isClickable() {
         	        return false;
         	      }
@@ -54,7 +54,7 @@ public class DiaryColumnDefinitionsImpl extends
     	    	public void render(DiaryEntry d, StringBuilder sb) {        
     	    		sb.append("<div id='" + d.getId() + "'>" + d.getData().getFormattedData() + "</div>");
     	    	}
-
+    	    	
     	    	public boolean isClickable() {
     	    		return false;
     	    	}

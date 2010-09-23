@@ -6,7 +6,6 @@ import java.util.List;
 import com.diacon.webclient.client.diary.common.ColumnDefinition;
 import com.diacon.webclient.shared.diary.DayTime;
 import com.diacon.webclient.shared.diary.EntryType;
-import com.diacon.webclient.shared.diary.FieldVerifier;
 import com.diacon.webclient.shared.diary.FoodTime;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -21,8 +20,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -34,13 +32,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -49,7 +43,6 @@ import com.google.gwt.user.client.ui.Tree;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.datepicker.client.DatePicker;
-import com.gwtincubator.widgets.client.timepicker.TimeModelConverter;
 import com.gwtincubator.widgets.client.timepicker.TimePicker;
 
 
@@ -65,7 +58,7 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 	@UiField ListBox actionList;
 	@UiField ListBox foodList;
 	@UiField Tree foodTree;
-	@UiField Label foodChooser;
+	@UiField Button foodButton;
 	@UiField Label insulineLabel;
 	@UiField ListBox insulineList;
 	@UiField TextBox foodQuantityText;
@@ -121,24 +114,14 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 			
 		});
 		
-
-		foodTree.addMouseOutHandler(new MouseOutHandler() {
-			public void onMouseOut(MouseOutEvent event) {
-				onMouseOutTree(event);				
-			}
-		});
-		
-		
 		foodDialogBox = new PopupPanel();
 		foodDialogBox.add(foodTree);
+		foodDialogBox.setModal(true);
 		
 		deleteButton.setVisible(false);
 		
 	}
 	
-	public void showDeleteButton() {
-
-	}
 	
 	public void changeAction() {
 		EntryType action = EntryType.valueOf(actionList.getValue(actionList.getSelectedIndex()));		
@@ -151,7 +134,8 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 		foodList.setVisible(action == EntryType.FOOD);
 		foodQuantityText.setVisible(action == EntryType.FOOD);
 		foodLabel.setVisible(action == EntryType.FOOD);
-		foodChooser.setVisible(action==EntryType.FOOD);
+		foodButton.setVisible(action==EntryType.FOOD);
+		addButton.setEnabled(action==EntryType.MEDICATION);
 	}
 	
 	public EntryType getAction() {
@@ -192,9 +176,23 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 	}
 
 	public String getFood() {
-		return foodTree.getSelectedItem().getText();
+		//TODO: Change this... 
+		if (foodButton.getText().equals("Choose Food")) {
+			return "Unreferenced food";
+		} else {		
+			return foodButton.getText();
+		}
 	}
 	
+	public void enableAddButton(boolean enabled) {
+		addButton.setEnabled(enabled);
+	}
+	
+	public void showDeleteButton(boolean show) {
+		deleteButton.setVisible(show);
+		
+	}
+
 	public Widget asWidget() {
 		return this;
 	}
@@ -260,101 +258,6 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 		diaryTable.setHTML(table.getInnerHTML());
 	}
 	
-	@UiHandler("addButton")
-	void onAddButtonClicked(ClickEvent event) {
-		if (presenter != null) {
-			presenter.onAddButtonClicked();
-		}
-	}
-
-	@UiHandler("actionList")
-	void onActionChanged(ChangeEvent event) {
-		if (presenter != null) {
-			presenter.onActionChanged();
-		}
-	}
-	
-	@UiHandler("measureText")
-	void onMeassureKeyPressed(KeyPressEvent event) {
-		onlyNumeric(measureText, event);
-	}
-	
-	@UiHandler("foodQuantityText")
-	void onFoodQuantityKeyPressed(KeyPressEvent event) {
-		onlyNumeric(foodQuantityText, event);
-	}
-	
-	@UiHandler("foodChooser")
-	void onMouseOverFood(MouseOverEvent event) {
-		
-		foodDialogBox.setPopupPosition(foodChooser.getAbsoluteLeft(), 
-				foodChooser.getAbsoluteTop() + foodChooser.getOffsetHeight());
-		foodDialogBox.show();
-	}
-	
-	@UiHandler("diaryTable")
-	void onTableClicked(ClickEvent event) {
-		if (presenter != null) {
-			EventTarget target = event.getNativeEvent().getEventTarget();
-			Node node = Node.as(target);
-			TableCellElement cell = findNearestParentCell(node);
-			if (cell == null) {
-				return;
-			}
-
-			TableRowElement tr = TableRowElement.as(cell.getParentElement());
-			int row = tr.getSectionRowIndex();
-
-			if (cell != null) {
-
-				ColumnDefinition<T> columnDefinition = 
-					columnDefinitions.get(cell.getCellIndex());
-
-				if (columnDefinition != null) {
-					if (columnDefinition.isSelectable()) {
-						presenter.onCheckClicked(rowData.get(row));
-					}   
-				}
-			}
-		}
-	}
-	
-	private TableCellElement findNearestParentCell(Node node) {
-		while ((node != null)) {
-			if (Element.is(node)) {
-				Element elem = Element.as(node);
-
-				String tagName = elem.getTagName();
-				if ("td".equalsIgnoreCase(tagName) || "th".equalsIgnoreCase(tagName)) {
-					return elem.cast();
-				}
-			}
-			node = node.getParentNode();
-		}
-		return null;
-	}
-	
-	
-	// FIXME: Use UiHandler???? (I don't know how)
-	void onSelectedFood(SelectionEvent<TreeItem> event) {
-		
-		if (event.getSelectedItem().getChildCount() == 0) {
-			foodDialogBox.hide();
-			foodChooser.setText(event.getSelectedItem().getText());
-		}
-	}
-	
-	void onMouseOutTree(MouseOutEvent event) {
-		foodDialogBox.hide();
-	}
-	
-	// FIXME: Use UiHandler???? (I don't know how)
-	void onCalendarValueChange(ValueChangeEvent<Date> event) {
-		if (presenter != null) {
-			presenter.onCalendarChanged(event.getValue());
-		}
-	}
-	
 	public void setColumnDefinitions(List<ColumnDefinition<T>> columnDefinitions) {
 		this.columnDefinitions = columnDefinitions;
 		
@@ -403,10 +306,112 @@ public class DiaryViewImpl<T> extends Composite implements DiaryView<T>  {
 		bread.addItem("White Bread");
 		foodTree.addItem(bread);
 	}
+	
+	
+	// Handlers
+	
+	@UiHandler("addButton")
+	void onAddButtonClicked(ClickEvent event) {
+		if (presenter != null) {
+			presenter.onAddButtonClicked();
+		}
+	}
+	
+	@UiHandler("deleteButton")
+	void onDeleteButtonClicked(ClickEvent event) {
+		if (presenter != null) {
+			presenter.onDeleteButtonClicked();
+		}
+	}
 
-	public void showDeleteButton(boolean show) {
-		deleteButton.setVisible(show);
+	@UiHandler("actionList")
+	void onActionChanged(ChangeEvent event) {
+		if (presenter != null) {
+			presenter.onActionChanged();
+		}
+	}
+	
+	@UiHandler("measureText")
+	void onMeasureKeyPressed(KeyPressEvent event) {
+		onlyNumeric(measureText, event);
+	}	
+	@UiHandler("measureText")
+	void onMeasureChanged(KeyUpEvent event) {
+		presenter.onTextChanged(measureText);
+	}
+	
+	@UiHandler("foodQuantityText")
+	void onFoodQuantityKeyPressed(KeyPressEvent event) {
+		onlyNumeric(foodQuantityText, event);
+		presenter.onTextChanged(foodQuantityText);
+	}
+	@UiHandler("foodQuantityText")
+	void onFoodQuantityChanged(KeyUpEvent event) {
+		presenter.onTextChanged(foodQuantityText);
+	}
+	
+	@UiHandler("foodButton")
+	void onMouseClickFood(ClickEvent event) {
 		
+		foodDialogBox.setPopupPosition(foodButton.getAbsoluteLeft(), 
+				foodButton.getAbsoluteTop() + foodButton.getOffsetHeight());
+		foodDialogBox.show();
+	}
+	
+	@UiHandler("diaryTable")
+	void onTableClicked(ClickEvent event) {
+		if (presenter != null) {
+			EventTarget target = event.getNativeEvent().getEventTarget();
+			Node node = Node.as(target);
+			TableCellElement cell = findNearestParentCell(node);
+			if (cell == null) {
+				return;
+			}
+
+			TableRowElement tr = TableRowElement.as(cell.getParentElement());
+			int row = tr.getSectionRowIndex();
+
+			if (cell != null) {
+
+				ColumnDefinition<T> columnDefinition = 
+					columnDefinitions.get(cell.getCellIndex());
+
+				if (columnDefinition != null) {
+					if (columnDefinition.isSelectable()) {
+						presenter.onCheckClicked(rowData.get(row));
+					}   
+				}
+			}
+		}
+	}
+	
+	private TableCellElement findNearestParentCell(Node node) {
+		if (Element.is(node)) {
+			Element elem = Element.as(node);
+
+			String tagName = elem.getTagName();
+			if ("input".equalsIgnoreCase(tagName)) {
+				return elem.getParentElement().cast();
+			}
+		}
+		return null;
+	}
+	
+	
+	// FIXME: Use UiHandler???? (I don't know how)
+	void onSelectedFood(SelectionEvent<TreeItem> event) {
+		
+		if (event.getSelectedItem().getChildCount() == 0) {
+			foodDialogBox.hide();
+			foodButton.setText(event.getSelectedItem().getText());
+		}
+	}
+	
+	// FIXME: Use UiHandler???? (I don't know how)
+	void onCalendarValueChange(ValueChangeEvent<Date> event) {
+		if (presenter != null) {
+			presenter.onCalendarChanged(event.getValue());
+		}
 	}
 	
 
